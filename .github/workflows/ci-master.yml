@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
+    - feat/ci-tag-versioning
     - master
 jobs:
   build:
