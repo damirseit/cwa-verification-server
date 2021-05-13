@@ -24,6 +24,9 @@ jobs:
         java-version: 11
     - name: environment
       run: |
+          sudo apt-get install --yes --no-install-recommends libxml-xpath-perl
+          export ARTIFACT_ID=$(xpath -q -e "/project/artifactId/text()" pom.xml)
+          echo "ARTIFACT_ID=${ARTIFACT_ID}" >> $GITHUB_ENV
           APP_SHA=$(git rev-parse --short ${GITHUB_SHA});
           APP_REV=$(git rev-list --tags --max-count=1);
           APP_TAG=$(git describe --tags ${APP_REV} 2> /dev/null || echo 0.0.0);
@@ -60,7 +63,7 @@ jobs:
       run: |
         docker build \
         --tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${ARTIFACT_ID}:${VERSION} \
-        --tag ${TRUSTED_URL}/${TRUSTED_REPOSITORY}/${ARTIFACT_ID}:${VERSION} \
+        --tag ${TRUSTED_URL}/${TRUSTED_REPOSITORY}:${VERSION} \
         .
       env:
         TRUSTED_URL: ${{ secrets.TRUSTED_URL }}
