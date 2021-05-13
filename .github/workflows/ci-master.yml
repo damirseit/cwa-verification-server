@@ -1,5 +1,6 @@
 name: ci-master
 on:
+  workflow_dispatch:
   push:
     branches:
     - master
@@ -22,14 +23,19 @@ jobs:
         java-version: 11
     - name: environment
       run: |
-        sudo apt-get install --yes --no-install-recommends libxml-xpath-perl
-        export ARTIFACT_ID=$(xpath -q -e "/project/artifactId/text()" pom.xml)
-        echo "ARTIFACT_ID=${ARTIFACT_ID}" >> $GITHUB_ENV
-        export VERSION=$(xpath -q -e "/project/version/text()" pom.xml)
-        export VERSION=${VERSION//-SNAPSHOT}-$(git rev-parse --short ${GITHUB_SHA})
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          APP_SHA=$(git rev-parse --short ${GITHUB_SHA});
+          APP_REV=$(git rev-list --tags --max-count=1);
+          APP_TAG=$(git describe --tags ${APP_REV} 2> /dev/null || echo 0.0.0);
+          APP_VERSION=${APP_TAG}-${APP_SHA};
+          echo "APP_SHA=${APP_SHA}" >> ${GITHUB_ENV};
+          echo "APP_TAG=${APP_TAG}" >> ${GITHUB_ENV};
+          echo "APP_VERSION=${APP_VERSION}" >> ${GITHUB_ENV};
     - name: mvn version
-      run: mvn --batch-mode versions:set -DgenerateBackupPoms=false -DnewVersion=${VERSION}
+      run: >-
+        mvn versions:set
+        --batch-mode
+        --define newVersion="${APP_VERSION};
+
     - name: mvn deploy
       run: mvn --batch-mode deploy
       env:
