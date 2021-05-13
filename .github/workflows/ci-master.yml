@@ -35,7 +35,7 @@ jobs:
       run: >-
         mvn versions:set
         --batch-mode
-        --define newVersion="${APP_VERSION};
+        --define newVersion="${APP_VERSION}";
 
     - name: mvn deploy
       run: mvn --batch-mode deploy
