@@ -32,11 +32,7 @@ import app.coronawarn.verification.model.RegistrationToken;
 import app.coronawarn.verification.model.Tan;
 import app.coronawarn.verification.model.TanSourceOfTrust;
 import app.coronawarn.verification.model.TestResult;
-import app.coronawarn.verification.service.AppSessionService;
-import app.coronawarn.verification.service.FakeDelayService;
-import app.coronawarn.verification.service.FakeRequestService;
-import app.coronawarn.verification.service.TanService;
-import app.coronawarn.verification.service.TestResultServerService;
+import app.coronawarn.verification.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -98,6 +94,9 @@ public class ExternalTanController {
   @NonNull
   private final FakeRequestService fakeRequestService;
 
+  @NonNull
+  private final CustomMetricService customMetricService;
+
   /**
    * This method generates a transaction number by a Registration Token, if the state of the COVID-19 lab-test is
    * positive.
@@ -119,7 +118,9 @@ public class ExternalTanController {
   )
   public DeferredResult<ResponseEntity<Tan>> generateTan(@Valid @RequestBody RegistrationToken registrationToken,
                                                          @RequestHeader(value = "cwa-fake", required = false)
-                                                           String fake) {
+                                                           String fake,@RequestHeader(value = "user-agent", required = false) String userAgent) {
+
+    customMetricService.updateUserAgentMetric("generateTan", userAgent);
     if ((fake != null) && (fake.equals("1"))) {
       return fakeRequestService.generateTan(registrationToken);
     }

@@ -60,6 +60,8 @@
       **/config/*,
       **/exception/*
     </sonar.coverage.exclusions>
+    <!-- yauaa -->
+    <yauaa.version>6.9</yauaa.version>
   </properties>
 
   <dependencyManagement>
@@ -246,6 +248,11 @@
       <groupId>net.javacrumbs.shedlock</groupId>
       <artifactId>shedlock-provider-jdbc-template</artifactId>
       <version>${shedlock.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>nl.basjes.parse.useragent</groupId>
+      <artifactId>yauaa</artifactId>
+      <version>${yauaa.version}</version>
     </dependency>
   </dependencies>
 

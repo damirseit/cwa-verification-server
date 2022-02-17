@@ -30,10 +30,7 @@ import app.coronawarn.verification.model.HashedGuid;
 import app.coronawarn.verification.model.LabTestResult;
 import app.coronawarn.verification.model.RegistrationToken;
 import app.coronawarn.verification.model.TestResult;
-import app.coronawarn.verification.service.AppSessionService;
-import app.coronawarn.verification.service.FakeDelayService;
-import app.coronawarn.verification.service.FakeRequestService;
-import app.coronawarn.verification.service.TestResultServerService;
+import app.coronawarn.verification.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -88,6 +85,8 @@ public class ExternalTestStateController {
   private final FakeDelayService fakeDelayService;
 
   private final VerificationApplicationConfig config;
+  
+  private final CustomMetricService customMetricService;
 
   /**
    * Returns the test status of the COVID-19 test with cwa-fake header.
@@ -113,7 +112,10 @@ public class ExternalTestStateController {
   )
   public DeferredResult<ResponseEntity<TestResult>> getTestState(
     @Valid @RequestBody RegistrationToken registrationToken,
+    @RequestHeader(value = "user-agent", required = false) String userAgent,
     @RequestHeader(value = "cwa-fake", required = false) String fake) {
+
+    customMetricService.updateUserAgentMetric("getTestState", userAgent);
     if ((fake != null) && (fake.equals("1"))) {
       return fakeRequestService.getTestState(registrationToken);
     }

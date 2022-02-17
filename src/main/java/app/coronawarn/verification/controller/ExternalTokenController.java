@@ -101,11 +101,10 @@ public class ExternalTokenController {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public DeferredResult<ResponseEntity<RegistrationToken>> generateRegistrationToken(
     @RequestBody @Valid RegistrationTokenRequest request,
-    @RequestHeader HttpHeaders headers,
     @RequestHeader(value = "cwa-fake", required = false) String fake,
     @RequestHeader(value = "user-agent", required = false) String userAgent) {
 
-    customMetricService.updateUserAgentMetric(userAgent);
+    customMetricService.updateUserAgentMetric("generateRegistrationToken", userAgent);
     if ((fake != null) && (fake.equals("1"))) {
       return fakeRequestController.generateRegistrationToken(request);
     }
