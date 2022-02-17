@@ -28,6 +28,7 @@ import app.coronawarn.verification.model.RegistrationToken;
 import app.coronawarn.verification.model.RegistrationTokenKeyType;
 import app.coronawarn.verification.model.RegistrationTokenRequest;
 import app.coronawarn.verification.service.AppSessionService;
+import app.coronawarn.verification.service.CustomMetricService;
 import app.coronawarn.verification.service.FakeDelayService;
 import app.coronawarn.verification.service.FakeRequestService;
 import app.coronawarn.verification.service.TanService;
@@ -41,6 +42,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +81,8 @@ public class ExternalTokenController {
 
   private final FakeDelayService fakeDelayService;
 
+  private final CustomMetricService customMetricService;
+
   /**
    * This method generates a registrationToken by a hashed guid or a teleTAN.
    *
@@ -97,7 +101,11 @@ public class ExternalTokenController {
     produces = MediaType.APPLICATION_JSON_VALUE)
   public DeferredResult<ResponseEntity<RegistrationToken>> generateRegistrationToken(
     @RequestBody @Valid RegistrationTokenRequest request,
-    @RequestHeader(value = "cwa-fake", required = false) String fake) {
+    @RequestHeader HttpHeaders headers,
+    @RequestHeader(value = "cwa-fake", required = false) String fake,
+    @RequestHeader(value = "user-agent", required = false) String userAgent) {
+
+    customMetricService.updateUserAgentMetric(userAgent);
     if ((fake != null) && (fake.equals("1"))) {
       return fakeRequestController.generateRegistrationToken(request);
     }
