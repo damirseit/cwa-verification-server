@@ -2,18 +2,19 @@ package app.coronawarn.verification.service;
 
 import app.coronawarn.verification.config.VerificationApplicationConfig;
 import app.coronawarn.verification.model.EndpointCounter;
+import app.coronawarn.verification.model.RegistrationToken;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Tag;
-import lombok.extern.slf4j.Slf4j;
-import nl.basjes.parse.useragent.UserAgent;
-import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import io.micrometer.core.instrument.MeterRegistry;
-import org.springframework.stereotype.Component;
-
+import io.micrometer.core.instrument.Tag;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import nl.basjes.parse.useragent.UserAgent;
+import nl.basjes.parse.useragent.UserAgentAnalyzer;
+import org.springframework.stereotype.Component;
+
 
 /**
  * {@link  CustomMetricService} handling of custom metric exposure to prometheus.
@@ -41,8 +42,12 @@ public class CustomMetricService {
     apiEndpointCounters = new HashMap<>();
   }
 
-  private void createOrUpdateDeviceCounter(EndpointCounter endpointCounter, String deviceClass, String deviceName, String deviceVersion){
-    if (endpointCounter.deviceCounters.containsKey(deviceName)){
+  /**
+   * Update UserAgent Device Metrics.
+   */
+  private void createOrUpdateDeviceCounter(EndpointCounter endpointCounter, String deviceClass, String deviceName,
+                                           String deviceVersion) {
+    if (endpointCounter.deviceCounters.containsKey(deviceName)) {
       endpointCounter.deviceCounters.getOrDefault(deviceName,null).increment();
     } else {
       List<Tag> tags = new ArrayList<>();
@@ -56,8 +61,12 @@ public class CustomMetricService {
     }
   }
 
-  private void createOrUpdateAgentCounter(EndpointCounter endpointCounter, String agentClass, String agentName, String agentVersion){
-    if (endpointCounter.agentCounters.containsKey(agentName)){
+  /**
+   * Update UserAgent Agent Metrics.
+   */
+  private void createOrUpdateAgentCounter(EndpointCounter endpointCounter, String agentClass, String agentName,
+                                          String agentVersion) {
+    if (endpointCounter.agentCounters.containsKey(agentName)) {
       endpointCounter.agentCounters.getOrDefault(agentName,null).increment();
     } else {
       List<Tag> tags = new ArrayList<>();
@@ -71,6 +80,11 @@ public class CustomMetricService {
     }
   }
 
+  /**
+   * Will parse userAgent string and update Metrics acordingly.
+   * @param endpoint string describing the API endpoint which created the userAgent information
+   * @param userAgent userAgent string from Request header
+   */
   public void updateUserAgentMetric(String endpoint, String userAgent) {
     UserAgent ua = uaa.parse(userAgent);
     String deviceClass = ua.get(UserAgent.DEVICE_CLASS).getValue();
@@ -81,7 +95,7 @@ public class CustomMetricService {
     String agentVersion = ua.get(UserAgent.AGENT_VERSION).getValue();
 
     EndpointCounter endpointCounter = apiEndpointCounters.getOrDefault(endpoint,null);
-    if(endpointCounter == null) {
+    if (endpointCounter == null) {
       endpointCounter = new EndpointCounter(endpoint);
       apiEndpointCounters.put(endpoint, endpointCounter);
     }

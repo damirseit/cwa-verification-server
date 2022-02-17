@@ -32,7 +32,12 @@ import app.coronawarn.verification.model.RegistrationToken;
 import app.coronawarn.verification.model.Tan;
 import app.coronawarn.verification.model.TanSourceOfTrust;
 import app.coronawarn.verification.model.TestResult;
-import app.coronawarn.verification.service.*;
+import app.coronawarn.verification.service.AppSessionService;
+import app.coronawarn.verification.service.CustomMetricService;
+import app.coronawarn.verification.service.FakeDelayService;
+import app.coronawarn.verification.service.FakeRequestService;
+import app.coronawarn.verification.service.TanService;
+import app.coronawarn.verification.service.TestResultServerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -118,7 +123,9 @@ public class ExternalTanController {
   )
   public DeferredResult<ResponseEntity<Tan>> generateTan(@Valid @RequestBody RegistrationToken registrationToken,
                                                          @RequestHeader(value = "cwa-fake", required = false)
-                                                           String fake,@RequestHeader(value = "user-agent", required = false) String userAgent) {
+                                                           String fake,
+                                                         @RequestHeader(value = "user-agent", required = false)
+                                                             String userAgent) {
 
     customMetricService.updateUserAgentMetric("generateTan", userAgent);
     if ((fake != null) && (fake.equals("1"))) {
