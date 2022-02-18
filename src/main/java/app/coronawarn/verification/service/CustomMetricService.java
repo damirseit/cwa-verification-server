@@ -90,7 +90,9 @@ public class CustomMetricService {
    */
   public void updateUserAgentMetric(String endpoint, String userAgent) {
     log.info("User agent String = {}", userAgent);
-    if(!deviceMetricsEnabled) return;
+    if (!deviceMetricsEnabled) {
+      return;
+    }
     UserAgent ua = uaa.parse(userAgent);
     String deviceClass = ua.get(UserAgent.DEVICE_CLASS).getValue();
     String deviceName = ua.get(UserAgent.DEVICE_NAME).getValue();
