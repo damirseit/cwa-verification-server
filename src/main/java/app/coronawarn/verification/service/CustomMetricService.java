@@ -29,10 +29,13 @@ public class CustomMetricService {
 
   private final Map<String, EndpointCounter> apiEndpointCounters;
 
+  private final Boolean deviceMetricsEnabled;
+
   /**
    * Constructor for the CustomMetricService.
    */
   public CustomMetricService(VerificationApplicationConfig applicationConfig, MeterRegistry meterRegistry) {
+    deviceMetricsEnabled = applicationConfig.getEnableDeviceMetrics();
     uaa = UserAgentAnalyzer
       .newBuilder()
       .hideMatcherLoadStats()
@@ -86,6 +89,8 @@ public class CustomMetricService {
    * @param userAgent userAgent string from Request header
    */
   public void updateUserAgentMetric(String endpoint, String userAgent) {
+    log.info("User agent String = {}", userAgent);
+    if(!deviceMetricsEnabled) return;
     UserAgent ua = uaa.parse(userAgent);
     String deviceClass = ua.get(UserAgent.DEVICE_CLASS).getValue();
     String deviceName = ua.get(UserAgent.DEVICE_NAME).getValue();

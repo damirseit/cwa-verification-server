@@ -80,6 +80,7 @@ entities:
     days: 21
 initialFakeDelayMilliseconds: 10
 fakeDelayMovingAverageSamples: 5
+enableDeviceMetrics: true
 request:
   sizelimit: 10000
 

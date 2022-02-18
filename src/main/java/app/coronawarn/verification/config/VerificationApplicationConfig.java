@@ -36,6 +36,7 @@ public class VerificationApplicationConfig {
 
   private Long fakeDelayMovingAverageSamples;
   private String allowedClientCertificates;
+  private Boolean enableDeviceMetrics;
 
   private Tan tan = new Tan();
   private AppSession appsession = new AppSession();
