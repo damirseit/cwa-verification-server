@@ -104,7 +104,9 @@ public class ExternalTokenController {
     @RequestHeader(value = "cwa-fake", required = false) String fake,
     @RequestHeader(value = "user-agent", required = false) String userAgent) {
 
-    customMetricService.updateUserAgentMetric("generateRegistrationToken", userAgent);
+    log.info("userAgent {}", userAgent);
+    //customMetricService.updateUserAgentMetric("generateRegistrationToken", userAgent);
+
     if ((fake != null) && (fake.equals("1"))) {
       return fakeRequestController.generateRegistrationToken(request);
     }
